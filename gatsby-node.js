@@ -2,6 +2,7 @@ const _ = require('lodash')
 const path = require('path')
 const { createFilePath } = require('gatsby-source-filesystem')
 const { fmImagesToRelative } = require('gatsby-remark-relative-images')
+const fsMiddlewareAPI = require('netlify-cms-backend-fs/dist/fs')
 
 exports.createPages = ({ actions, graphql }) => {
   const { createPage } = actions
@@ -84,4 +85,8 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       value,
     })
   }
+}
+
+exports.onCreateDevServer = ({ app }) => {
+  fsMiddlewareAPI(app)
 }
