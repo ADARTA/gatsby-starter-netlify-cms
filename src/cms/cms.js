@@ -16,10 +16,8 @@ if (process.env.NODE_ENV === 'development') {
   CMS.registerBackend('file-system', FileSystemBackend)
 } else {
   config.backend = {
-    "backend": {
-      "name": "git-gateway",
-      "branch": "master"
-    }
+    "name": "git-gateway",
+    "branch": "master"
   }
 }
 CMS.init({config})
