@@ -8,6 +8,7 @@ CMS.init = init
 const config = { }
 if (process.env.NODE_ENV === 'development') {
   const { FileSystemBackend } = require('netlify-cms-backend-fs');
+  // config.load_config_file = false
   config.backend = {
     "name": "file-system",
     "api_root": "/api"

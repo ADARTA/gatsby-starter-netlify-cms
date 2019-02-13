@@ -1,59 +1,77 @@
 # Gatsby + Netlify CMS Starter
 
-**Note:** This starter uses [Gatsby v2](https://www.gatsbyjs.org/).
+**Note:** This starter uses [Gatsby v2][1].
 
-This repo contains an example business website that is built with [Gatsby](https://www.gatsbyjs.org/), and [Netlify CMS](https://www.netlifycms.org): **[Demo Link](https://gatsby-netlify-cms.netlify.com/)**.
+This repo contains an example business website that is built with [Gatsby][1], and [Netlify CMS][2]: **[Demo Link][4]**. [Original starter here.][3]
 
-**Also:** Uses the development backend [netlify-cms-backend-fs](https://github.com/adarta/netlify-cms-backend-fs)
+**Added:** Uses the development backend [netlify-cms-backend-fs](https://github.com/adarta/netlify-cms-backend-fs)
 
-It follows the [JAMstack architecture](https://jamstack.org) by using Git as a single source of truth, and [Netlify](https://www.netlify.com) for continuous deployment, and CDN distribution.
+## Setting up netlify-cms-backend-fs in Gatsby (has NetlifyCMS)
 
-## Prerequisites
+**Requires:**
 
-- Node (I recommend using v8.2.0 or higher)
-- [Gatsby CLI](https://www.gatsbyjs.org/docs/)
+* Netlify CMS already in the project
+* Gatsby v2.0+
+* Manual init in NetlifyCMS
 
-## Getting Started (Without Netlify)
-```
-$ gatsby new [SITE_DIRECTORY_NAME] https://github.com/adarta/gatsby-starter-netlify-cms
-$ cd [SITE_DIRECTORY_NAME]
-$ npm run build
-$ npm run serve
-```
+Add the backend to your project.
 
-## Getting Started (One Click)
+    $ yarn add netlify-cms-backend-fs
 
-Netlify CMS can run in any frontend web environment, but the quickest way to try it out is by running it on a pre-configured starter site with Netlify. The example here is the Kaldi coffee company template (adapted from [One Click Hugo CMS](https://github.com/netlify-templates/one-click-hugo-cms)). Use the button below to build and deploy your own copy of the repository:
+### Modify `gatsby-config.js` to use manual init of the cms
+
+    {
+      resolve: 'gatsby-plugin-netlify-cms',
+      options: {
+        modulePath: `${__dirname}/src/cms/cms.js`,
+        manualInit: true,
+      },
+    }
+
+### Add the dev server middleware api to `gatsby-node.js`
+
+    ...
+    
+    exports.onCreateDevServer = ({ app }) => {
+      const fsMiddlewareAPI = require('netlify-cms-backend-fs/dist/fs')
+      fsMiddlewareAPI(app)
+    }
+
+### Change/add `src/cms/cms.js`
+
+This configuration is simplified and yours may have [widget registration, etc][5]
+
+    import CMS, { init } from 'netlify-cms'
+    CMS.init = init
+    const config = { }
+    // Important to remove your backend config and replace it in this setup
+    if (process.env.NODE_ENV === 'development') {
+      const { FileSystemBackend } = require('netlify-cms-backend-fs');
+      config.backend = {
+        "name": "file-system",
+        "api_root": "/api"
+      }
+      config.display_url = "http://localhost:8000"
+      CMS.registerBackend('file-system', FileSystemBackend)
+    } else {
+      config.backend = {
+        "backend": {
+          "name": "git-gateway",
+          "branch": "master"
+        }
+      }
+    }
+    CMS.init({config})
+
+## Getting Started (One Click) with this starter
+
+Netlify CMS can run in any frontend web environment, but the quickest way to try it out is by running it on a pre-configured starter site with Netlify. The example here is the Kaldi coffee company template (adapted from [One Click Hugo CMS][3]). Use the button below to build and deploy your own copy of the repository:
 
 <a href="https://app.netlify.com/start/deploy?repository=https://github.com/adarta/gatsby-starter-netlify-cms&amp;stack=cms"><img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify"></a>
 
-After clicking that button, you’ll authenticate with GitHub and choose a repository name. Netlify will then automatically create a repository in your GitHub account with a copy of the files from the template. Next, it will build and deploy the new site on Netlify, bringing you to the site dashboard when the build is complete. Next, you’ll need to set up Netlify’s Identity service to authorize users to log in to the CMS.
 
-### Access Locally
-```
-$ git clone https://github.com/[GITHUB_USERNAME]/[REPO_NAME].git
-$ cd [REPO_NAME]
-$ yarn
-$ npm run develop
-```
-To test the CMS locally, you'll need run a production build of the site:
-```
-$ npm run build
-$ npm run serve
-```
-
-### Setting up the CMS
-Follow the [Netlify CMS Quick Start Guide](https://www.netlifycms.org/docs/quick-start/#authentication) to set up authentication, and hosting.
-
-## Debugging
-Windows users might encounter ```node-gyp``` errors when trying to npm install.
-To resolve, make sure that you have both Python 2.7 and the Visual C++ build environment installed.
-```
-npm config set python python2.7
-npm install --global --production windows-build-tools
-```
-
-[Full details here](https://www.npmjs.com/package/node-gyp 'NPM node-gyp page')
-
-## Purgecss
-This plugin uses [gatsby-plugin-purgecss](https://www.gatsbyjs.org/packages/gatsby-plugin-purgecss/) and [bulma](https://bulma.io/). The bulma builds are usually ~170K but reduced 90% by purgecss.
+[1]: https://www.gatsbyjs.org/
+[2]: https://www.netlifycms.org/
+[3]: https://github.com/netlify-templates/gatsby-starter-netlify-cms
+[4]: https://gatsby-netlify-cms.netlify.com/
+[5]: https://github.com/ADARTA/gatsby-starter-netlify-cms/blob/master/src/cms/cms.js
