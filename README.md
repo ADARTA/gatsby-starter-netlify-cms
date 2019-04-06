@@ -41,8 +41,7 @@ Add the backend to your project.
 
 This configuration is simplified and yours may have [widget registration, etc][5]
 
-    import CMS, { init } from 'netlify-cms'
-    CMS.init = init
+    import CMS from 'netlify-cms-app'
     const config = { }
     // Important to remove your backend config and replace it in this setup
     if (process.env.NODE_ENV === 'development') {
@@ -56,7 +55,8 @@ This configuration is simplified and yours may have [widget registration, etc][5
     } else {
       config.backend = {
         "backend": {
-          "name": "git-gateway",
+          "name": "github",
+          "repo": "ADARTA/gatsby-starter-netlify-cms",
           "branch": "master"
         }
       }
