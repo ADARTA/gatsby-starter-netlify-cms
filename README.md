@@ -15,53 +15,58 @@ This repo contains an example business website that is built with [Gatsby][1], a
 * Manual init in NetlifyCMS
 
 Add the backend to your project.
-
-    $ yarn add netlify-cms-backend-fs
+```sh
+$ yarn add netlify-cms-backend-fs
+```
 
 ### Modify `gatsby-config.js` to use manual init of the cms
-
-    {
-      resolve: 'gatsby-plugin-netlify-cms',
-      options: {
-        modulePath: `${__dirname}/src/cms/cms.js`,
-        manualInit: true,
-      },
-    }
+```js
+{
+  resolve: 'gatsby-plugin-netlify-cms',
+  options: {
+    modulePath: `${__dirname}/src/cms/cms.js`,
+    manualInit: true,
+  },
+}
+```
 
 ### Add the dev server middleware api to `gatsby-node.js`
+```js
+// ...
 
-    ...
-    
-    exports.onCreateDevServer = ({ app }) => {
-      const fsMiddlewareAPI = require('netlify-cms-backend-fs/dist/fs')
-      fsMiddlewareAPI(app)
-    }
+exports.onCreateDevServer = ({ app }) => {
+  const fsMiddlewareAPI = require('netlify-cms-backend-fs/dist/fs')
+  fsMiddlewareAPI(app)
+}
+```
 
 ### Change/add `src/cms/cms.js`
 
 This configuration is simplified and yours may have [widget registration, etc][5]
 
-    import CMS from 'netlify-cms-app'
-    const config = { }
-    // Important to remove your backend config and replace it in this setup
-    if (process.env.NODE_ENV === 'development') {
-      const { FileSystemBackend } = require('netlify-cms-backend-fs');
-      config.backend = {
-        "name": "file-system",
-        "api_root": "/api"
-      }
-      config.display_url = "http://localhost:8000"
-      CMS.registerBackend('file-system', FileSystemBackend)
-    } else {
-      config.backend = {
-        "backend": {
-          "name": "github",
-          "repo": "ADARTA/gatsby-starter-netlify-cms",
-          "branch": "master"
-        }
-      }
+```js
+import CMS from 'netlify-cms-app'
+const config = { }
+// Important to remove your backend config and replace it in this setup
+if (process.env.NODE_ENV === 'development') {
+  const FileSystemBackend = require('netlify-cms-backend-fs');
+  config.backend = {
+    "name": "file-system",
+    "api_root": "/api"
+  }
+  config.display_url = "http://localhost:8000"
+  CMS.registerBackend('file-system', FileSystemBackend)
+} else {
+  config.backend = {
+    "backend": {
+      "name": "github",
+      "repo": "ADARTA/gatsby-starter-netlify-cms",
+      "branch": "master"
     }
-    CMS.init({config})
+  }
+}
+CMS.init({config})
+```
 
 ## Getting Started (One Click) with this starter
 
